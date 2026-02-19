@@ -1,0 +1,22 @@
+{
+    "id": "sora_manifold_companion",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Sora 2 Companion",
+    "type": "filter",
+    "meta": {
+        "description": "Companion filter for OpenAI Sora 2 Manifold to persist video metadata.",
+        "manifest": {
+            "title": "Sora 2 Companion",
+            "id": "openai_sora_2_companion",
+            "description": "Companion filter for OpenAI Sora 2 Manifold to persist video metadata.",
+            "author": "Dolfies",
+            "version": "0.1.0",
+            "license": "MIT",
+            "requirements": "loguru"
+        }
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1771391965,
+    "created_at": 1771386453
+}

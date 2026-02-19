@@ -1,0 +1,23 @@
+{
+    "id": "web_search_toggle_filter",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "OpenAI Web Search",
+    "type": "filter",
+    "meta": {
+        "description": "Instruct the model to search the web for the latest information.",
+        "manifest": {
+            "title": "Web Search",
+            "id": "web_search_toggle_filter",
+            "description": "Instruct the model to search the web for the latest information.",
+            "required_open_webui_version": "0.6.10",
+            "version": "0.2.0",
+            "Note": "Designed to work with the OpenAI Responses manifold",
+            "https": "//github.com/jrkropp/open-webui-developer-toolkit/tree/main/functions/pipes/openai_responses_manifold"
+        },
+        "toggle": true
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1765486933,
+    "created_at": 1759193020
+}

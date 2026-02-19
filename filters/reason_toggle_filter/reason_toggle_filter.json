@@ -1,0 +1,21 @@
+{
+    "id": "reason_toggle_filter",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Think Harder",
+    "type": "filter",
+    "meta": {
+        "description": "Think before responding.",
+        "manifest": {
+            "title": "Think Harder",
+            "id": "reason_filter",
+            "description": "Think before responding.",
+            "required_open_webui_version": "0.6.10",
+            "version": "0.2.0"
+        },
+        "toggle": true
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1771394784,
+    "created_at": 1759195168
+}

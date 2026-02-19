@@ -1,0 +1,21 @@
+{
+    "id": "web_search_toggle_filter_2",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "xAI Web Search",
+    "type": "filter",
+    "meta": {
+        "description": "Instruct the model to search the web for the latest information.",
+        "manifest": {
+            "title": "Web Search",
+            "id": "web_search_toggle_filter",
+            "description": "Instruct the model to search the web for the latest information.",
+            "required_open_webui_version": "0.6.10",
+            "version": "0.2.0"
+        },
+        "toggle": true
+    },
+    "is_active": false,
+    "is_global": true,
+    "updated_at": 1771375696,
+    "created_at": 1759265737
+}

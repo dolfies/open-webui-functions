@@ -1,0 +1,35 @@
+{
+    "id": "gemini_manifold_google_genai",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Google Gemini",
+    "type": "pipe",
+    "meta": {
+        "description": "Manifold function for Gemini Developer API. Supports native image generation, grounding with Google Search and streaming.",
+        "manifest": {
+            "title": "Gemini Manifold google_genai",
+            "id": "gemini_manifold_google_genai",
+            "description": "Manifold function for Gemini Developer API and Vertex AI. Uses the newer google-genai SDK. Aims to support as many features from it as possible.",
+            "author": "suurt8ll",
+            "author_url": "https://github.com/suurt8ll",
+            "funding_url": "https://github.com/suurt8ll/open_webui_functions",
+            "license": "MIT",
+            "version": "2.0.0",
+            "requirements": "google-genai==1.52.0",
+            "commit": "33eddbc78ed827ed0053ca52315ca13e1c25bf5f"
+        },
+        "type": "pipe",
+        "user": {
+            "id": "0a9c1a54-0894-4b9f-92b1-900d686caa83",
+            "username": "suurt8ll",
+            "name": "",
+            "createdAt": 1728305531,
+            "role": null,
+            "verified": false
+        },
+        "id": "7e7bbc23-846e-455a-b810-172a8251d028"
+    },
+    "is_active": true,
+    "is_global": false,
+    "updated_at": 1771374954,
+    "created_at": 1759149010
+}

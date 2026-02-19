@@ -1,0 +1,22 @@
+{
+    "id": "anthropic",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Anthropic Manifold",
+    "type": "pipe",
+    "meta": {
+        "description": "All-in-one integration for Anthropic models",
+        "manifest": {
+            "title": "Anthropic Manifold",
+            "authors": "Balaxxe, nbellochi, Bermont, Mark Kazakov, Christian Taillon",
+            "author_url": "https://github.com/christian-taillon",
+            "funding_url": "https://github.com/open-webui",
+            "version": "8.5",
+            "license": "MIT",
+            "requirements": "pydantic>=2.0.0, aiohttp>=3.8.0"
+        }
+    },
+    "is_active": true,
+    "is_global": false,
+    "updated_at": 1771397440,
+    "created_at": 1771392719
+}

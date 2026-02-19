@@ -1,0 +1,30 @@
+{
+    "id": "perplexity_sonar",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Perplexity Sonar",
+    "type": "pipe",
+    "meta": {
+        "description": "Perplexity Sonar API with support of citations and search customization.",
+        "manifest": {
+            "title": "Perplexity Sonar Manifold Pipe",
+            "author": "yazon",
+            "author_url": "https://github.com/open-webui/open-webui/discussions/11212",
+            "funding_url": "https://github.com/open-webui",
+            "version": "0.2.2"
+        },
+        "type": "pipe",
+        "user": {
+            "id": "18d3bed9-79ae-4e5f-a585-bd80aeae4258",
+            "username": "yazon",
+            "name": "",
+            "createdAt": 1740732129,
+            "role": null,
+            "verified": false
+        },
+        "id": "81d0e2ff-d6ab-4072-8a68-30662b39e79b"
+    },
+    "is_active": true,
+    "is_global": false,
+    "updated_at": 1759294499,
+    "created_at": 1759293571
+}

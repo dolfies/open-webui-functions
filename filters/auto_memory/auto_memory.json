@@ -1,0 +1,26 @@
+{
+    "id": "auto_memory",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Auto Memory",
+    "type": "filter",
+    "meta": {
+        "description": "Automatically store relevant information as Memories.",
+        "manifest": {
+            "title": "Auto Memory",
+            "author": "@nokodo",
+            "description": "automatically identify and store valuable information from chats as Memories.",
+            "author_email": "nokodo@nokodo.net",
+            "author_url": "https://nokodo.net",
+            "repository_url": "https://nokodo.net/github/open-webui-extensions",
+            "version": "1.2.0",
+            "required_open_webui_version": ">= 0.5.0",
+            "funding_url": "https://ko-fi.com/nokodo",
+            "license": "see extension documentation file `auto_memory.md` (License section) for the licensing terms."
+        },
+        "type": "filter"
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1771377110,
+    "created_at": 1767927330
+}

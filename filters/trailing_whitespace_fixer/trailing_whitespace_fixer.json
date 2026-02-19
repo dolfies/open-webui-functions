@@ -1,0 +1,23 @@
+{
+    "id": "trailing_whitespace_fixer",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Trailing Whitespace Fixer",
+    "type": "filter",
+    "meta": {
+        "description": "Fixes a glitch where extraneous trailing whitespace is added to user messages, cleaning up the entire conversation history before it reaches the LLM.",
+        "manifest": {
+            "title": "Trailing Whitespace Fixer",
+            "description": "Fixes a glitch where extraneous trailing whitespace is added to user messages, cleaning up the entire conversation history before it reaches the LLM.",
+            "id": "trailing_whitespace_fixer",
+            "author": "suurt8ll",
+            "author_url": "https://github.com/suurt8ll",
+            "funding_url": "https://github.com/suurt8ll/open_webui_functions",
+            "license": "MIT",
+            "version": "1.0.0"
+        }
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1763698187,
+    "created_at": 1763688756
+}

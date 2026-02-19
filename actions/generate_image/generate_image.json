@@ -1,0 +1,24 @@
+{
+    "id": "generate_image",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Generate Image",
+    "type": "action",
+    "meta": {
+        "description": "Adds a \"Generate Image\" action button to the message toolbar that uses the message content as a prompt for image generation.",
+        "manifest": {
+            "title": "Generate Image",
+            "author": "@G30",
+            "author_url": "https://github.com/open-webui",
+            "funding_url": "https://github.com/open-webui/open-webui",
+            "version": "0.1.5",
+            "license": "MIT",
+            "required_open_webui_version": "0.6.41",
+            "icon_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlLXdpZHRoPSIyLjMiIHN0cm9rZT0iY3VycmVudENvbG9yIj48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Im0yLjI1IDE1Ljc1IDUuMTU5LTUuMTU5YTIuMjUgMi4yNSAwIDAgMSAzLjE4MiAwbDUuMTU5IDUuMTU5bS0xLjUtMS41IDEuNDA5LTEuNDA5YTIuMjUgMi4yNSAwIDAgMSAzLjE4MiAwbDIuOTA5IDIuOTA5bS0xOCAzLjc1aDE2LjVhMS41IDEuNSAwIDAgMCAxLjUtMS41VjZhMS41IDEuNSAwIDAgMC0xLjUtMS41SDMuNzVBMS41IDEuNSAwIDAgMCAyLjI1IDZ2MTJhMS41IDEuNSAwIDAgMCAxLjUgMS41Wm0xMC41LTExLjI1aC4wMDh2LjAwOGgtLjAwOFY4LjI1Wm0uMzc1IDBhLjM3NS4zNzUgMCAxIDEtLjc1IDAgLjM3NS4zNzUgMCAwIDEgLjc1IDBaIiAvPjwvc3ZnPg=="
+        },
+        "type": "action"
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1771457229,
+    "created_at": 1767927258
+}

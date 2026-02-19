@@ -1,0 +1,23 @@
+{
+    "id": "gemini_maps_grounding_toggle",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "Google Maps Grounding",
+    "type": "filter",
+    "meta": {
+        "description": "Ground the model's response in Google Maps data",
+        "manifest": {
+            "title": "Google Maps",
+            "id": "gemini_maps_grounding_toggle",
+            "description": "Ground the model's response in Google Maps data",
+            "author": "suurt8ll",
+            "author_url": "https://github.com/suurt8ll",
+            "funding_url": "https://github.com/suurt8ll/open_webui_functions",
+            "license": "MIT",
+            "version": "1.0.0"
+        }
+    },
+    "is_active": true,
+    "is_global": true,
+    "updated_at": 1765074694,
+    "created_at": 1765074677
+}

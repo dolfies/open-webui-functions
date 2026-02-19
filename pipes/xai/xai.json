@@ -1,0 +1,21 @@
+{
+    "id": "xai",
+    "user_id": "29b2ced8-3278-4d66-b9ee-df7fe27fc8d4",
+    "name": "xAI",
+    "type": "pipe",
+    "meta": {
+        "description": "Manifold function for xAI API",
+        "manifest": {
+            "title": "Grok Manifold",
+            "author": "Siraj Florida",
+            "author_url": "https://github.com/sirajperson",
+            "funding_url": "https://www.kinothen.com",
+            "version": "0.1.0",
+            "license": "GNUv3"
+        }
+    },
+    "is_active": false,
+    "is_global": false,
+    "updated_at": 1771375666,
+    "created_at": 1759182639
+}
