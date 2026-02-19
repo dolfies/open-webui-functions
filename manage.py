@@ -51,7 +51,7 @@ def extract(export_path: Path):
         )
 
         extracted_count += 1
-        print(f"Extracted: {target_dir}/")
+        print(f"Extracted: {target_dir}")
 
     print(f"\nSuccessfully extracted {extracted_count} function")
 
@@ -79,7 +79,7 @@ def bundle(output_path: Path):
                 # Reinsert the content
                 func["content"] = content
                 functions.append(func)
-                print(f"Bundled: {target_dir}/")
+                print(f"Bundled: {target_dir}")
 
     output_path.write_text(
         json.dumps(functions, ensure_ascii=False, separators=(',', ':')), encoding="utf-8"
