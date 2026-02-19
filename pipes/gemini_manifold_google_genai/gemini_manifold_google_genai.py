@@ -2226,11 +2226,11 @@ class Pipe:
                     __metadata__,
                 )
         except Exception as e:
-            error_msg = f"API request failed: {self._format_error(e)}"
+            error_msg = self._format_error(e)
             log.exception(error_msg)
             if __event_emitter__:
                 await event_emitter.emit_error(error_msg)
-            return error_msg
+            return ""
 
     # region 2. Helper methods inside the Pipe class
 
@@ -3816,54 +3816,25 @@ class Pipe:
         """Formats an exception into a more readable string, specially for Gemini API errors."""
         error_str = str(e)
 
-        # Try to parse if it's a Genai API error with a JSON message
-        if isinstance(e, genai_errors.ClientError):
+        if isinstance(e, genai_errors.APIError):
             try:
-                message_content = getattr(e, "message", None)
+                message = getattr(e, "message", None)
+                code = getattr(e, "code", None)
+                status = getattr(e, "status", None)
 
-                # Case 1: message_content is a dict with a 'message' key (common in google-genai)
-                json_text = None
-                if isinstance(message_content, dict) and "message" in message_content:
-                    json_text = message_content["message"]
-                elif isinstance(message_content, str):
-                    json_text = message_content
+                if message:
+                    status_part = ""
+                    if code:
+                        status_part += str(code)
+                    if status:
+                        if status_part:
+                            status_part += f" {status}"
+                        else:
+                            status_part = status
 
-                if json_text and isinstance(json_text, str):
-                    try:
-                        data = json.loads(json_text)
-                        if (
-                            isinstance(data, dict)
-                            and "error" in data
-                            and "message" in data["error"]
-                        ):
-                            clean_message = data["error"]["message"]
-
-                            code = getattr(e, "code", None)
-                            status = getattr(e, "status", None)
-
-                            # Fallback to checking the dictionary content if attributes are missing
-                            if (not code or not status) and isinstance(
-                                message_content, dict
-                            ):
-                                if not code:
-                                    code = message_content.get("code")
-                                if not status:
-                                    status = message_content.get("status")
-
-                            status_part = ""
-                            if code:
-                                status_part += str(code)
-                            if status:
-                                if status_part:
-                                    status_part += f" {status}"
-                                else:
-                                    status_part = status
-
-                            if status_part:
-                                return f"{status_part}: {clean_message}"
-                            return clean_message
-                    except (json.JSONDecodeError, TypeError):
-                        pass
+                    if status_part:
+                        return f"{status_part}: {message}"
+                    return message
             except Exception:
                 pass
 
