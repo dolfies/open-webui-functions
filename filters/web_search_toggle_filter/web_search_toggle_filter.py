@@ -22,6 +22,7 @@ WEB_SEARCH_MODELS = {
     "openai_responses.gpt-4o",
     "openai_responses.gpt-4o-mini",
     "openai_responses.o3",
+    "openai_responses.o1",
     "openai_responses.o3-deep-research",
     "openai_responses.o4-mini",
     "openai_responses.o4-mini-deep-research",
@@ -35,8 +36,18 @@ WEB_SEARCH_MODELS = {
     "openai_responses.gpt-5.2-chat-latest",
     "openai_responses.gpt-5-pro",
     "openai_responses.gpt-5-mini",
+    "openai_responses.gpt-5-codex",
+    "openai_responses.gpt-5.1-codex",
+    "openai_responses.gpt-5.2-codex",
+    "openai_responses.gpt-5.3-codex",
+    "openai_responses.gpt-5.1-codex-mini",
+    "openai_responses.gpt-5.1-codex-max",
+    "openai_responses.gpt-5-codex-mini",
     "openai_responses.gpt-5-thinking",
     "openai_responses.gpt-5-thinking-high",
+    "openai_responses.gpt-5-codex-thinking",
+    "openai_responses.gpt-5-codex-thinking-high",
+    "openai_responses.gpt-5-codex-thinking-minimal",
 }
 
 SUPPORT_TOOL_CHOICE_PARAMETER = {

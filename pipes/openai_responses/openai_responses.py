@@ -43,7 +43,6 @@ from typing import (
     Optional,
     Union,
 )
-from urllib.parse import urlparse
 
 # Third-party imports
 import aiohttp
@@ -147,6 +146,75 @@ class ModelFamily:
                 "verbosity",
             }
         },
+        "gpt-5-codex": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.1-codex": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.2-codex": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.3-codex": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.1-codex-mini": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.1-codex-max": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5-codex-mini": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5-search-api": {
+            "features": {
+                "function_calling",
+                "web_search_inbuilt",
+            }
+        },
         "gpt-4.1": {
             "features": {"function_calling", "web_search_tool", "image_gen_tool"}
         },
@@ -160,6 +228,10 @@ class ModelFamily:
         "gpt-4o-mini": {
             "features": {"function_calling", "web_search_tool", "image_gen_tool"}
         },
+        "gpt-4o-search-preview": {
+            "features": {"function_calling", "web_search_inbuilt"}
+        },
+        "o1": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
         "o3": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
         "o3-mini": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
         "o3-pro": {"features": {"function_calling", "reasoning"}},
@@ -196,13 +268,22 @@ class ModelFamily:
     # Aliases/pseudos: keep base + implied params together.
     # Note: params follow the CompletionsBody model and are later transformed to ResponsesBody format
     _ALIASES: Dict[str, Dict[str, Any]] = {
-        "gpt-5.1-thinking": {"base_model": "gpt-5"},
+        "gpt-5.2-thinking": {"base_model": "gpt-5.2"},
+        "gpt-5.2-thinking-minimal": {
+            "base_model": "gpt-5.2",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.2-thinking-high": {
+            "base_model": "gpt-5.2",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.1-thinking": {"base_model": "gpt-5.1"},
         "gpt-5.1-thinking-minimal": {
-            "base_model": "gpt-5",
+            "base_model": "gpt-5.1",
             "params": {"reasoning": {"effort": "minimal"}},
         },
         "gpt-5.1-thinking-high": {
-            "base_model": "gpt-5",
+            "base_model": "gpt-5.1",
             "params": {"reasoning": {"effort": "high"}},
         },
         "gpt-5-thinking": {"base_model": "gpt-5"},
@@ -230,6 +311,69 @@ class ModelFamily:
         },
         "gpt-5-thinking-nano-high": {
             "base_model": "gpt-5-nano",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5-codex-thinking": {"base_model": "gpt-5-codex"},
+        "gpt-5-codex-thinking-minimal": {
+            "base_model": "gpt-5-codex",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5-codex-thinking-high": {
+            "base_model": "gpt-5-codex",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5-codex-thinking-mini": {"base_model": "gpt-5-codex-mini"},
+        "gpt-5-codex-thinking-mini-minimal": {
+            "base_model": "gpt-5-codex-mini",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5-codex-thinking-mini-high": {
+            "base_model": "gpt-5-codex-mini",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.1-codex-thinking": {"base_model": "gpt-5.1-codex"},
+        "gpt-5.1-codex-thinking-minimal": {
+            "base_model": "gpt-5.1-codex",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.1-codex-thinking-high": {
+            "base_model": "gpt-5.1-codex",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.1-codex-thinking-mini": {"base_model": "gpt-5.1-codex-mini"},
+        "gpt-5.1-codex-thinking-mini-minimal": {
+            "base_model": "gpt-5.1-codex-mini",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.1-codex-thinking-mini-high": {
+            "base_model": "gpt-5.1-codex-mini",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.1-codex-thinking-max": {"base_model": "gpt-5.1-codex-max"},
+        "gpt-5.1-codex-thinking-max-minimal": {
+            "base_model": "gpt-5.1-codex-max",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.1-codex-thinking-max-high": {
+            "base_model": "gpt-5.1-codex-max",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.2-codex-thinking": {"base_model": "gpt-5.2-codex"},
+        "gpt-5.2-codex-thinking-minimal": {
+            "base_model": "gpt-5.2-codex",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.2-codex-thinking-high": {
+            "base_model": "gpt-5.2-codex",
+            "params": {"reasoning": {"effort": "high"}},
+        },
+        "gpt-5.3-codex-thinking": {"base_model": "gpt-5.3-codex"},
+        "gpt-5.3-codex-thinking-minimal": {
+            "base_model": "gpt-5.3-codex",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.3-codex-thinking-high": {
+            "base_model": "gpt-5.3-codex",
             "params": {"reasoning": {"effort": "high"}},
         },
         # Back-compat
@@ -731,7 +875,7 @@ class Pipe:
 
         # Models
         MODEL_ID: str = Field(
-            default="gpt-5.1-chat-latest, gpt-5.1-thinking, gpt-5.1-thinking-high, gpt-5.1-thinking-minimal",
+            default="gpt-5.2-chat-latest, gpt-5.2-thinking, gpt-5.2-thinking-high, gpt-5.2-thinking-minimal, gpt-5.3-codex, gpt-5.1-codex-max",
             description=(
                 "Comma separated OpenAI model IDs. Each ID becomes a model entry in WebUI. "
                 "Supports all official OpenAI model IDs and pseudo IDs (see README.md for full list)."
@@ -789,7 +933,7 @@ class Pipe:
         # Web search
         ENABLE_WEB_SEARCH_TOOL: bool = Field(
             default=False,
-            description="Enable OpenAI's built-in 'web_search' tool when supported (gpt-4.1, gpt-4.1-mini, gpt-4o, gpt-4o-mini, o3, o4-mini, o4-mini-high).  NOTE: This appears to disable parallel tool calling. Read more: https://platform.openai.com/docs/guides/tools-web-search?api-mode=responses",
+            description="Enable OpenAI's built-in 'web_search' tool when supported (gpt-4.1, gpt-4.1-mini, gpt-4o, gpt-4o-mini, gpt-5 family, gpt-5-codex family, o3, o4-mini, o4-mini-high).  NOTE: This appears to disable parallel tool calling. Read more: https://platform.openai.com/docs/guides/tools-web-search?api-mode=responses",
         )
         WEB_SEARCH_CONTEXT_SIZE: Literal["low", "medium", "high", None] = Field(
             default="medium",
@@ -1494,6 +1638,12 @@ class Pipe:
                             title = "Let me skim those files…"
                         elif item_type == "image_generation_call":
                             title = "Let me create that image…"
+                        elif item_type == "code_interpreter_call":
+                            title = "Let me run that code…"
+                        elif item_type == "container_call":
+                            title = "Let me run that container task…"
+                        elif item_type == "computer_call":
+                            title = "Let me use computer automation for that…"
                         elif item_type == "local_shell_call":
                             title = "Let me run that command…"
                         elif item_type == "mcp_call":
