@@ -1792,9 +1792,9 @@ class Pipe:
             description="""Select logging level. Use `docker logs -f open-webui` to view logs.
             Default value is INFO.""",
         )
-        IMAGE_RESOLUTION: Literal["1K", "2K", "4K"] = Field(
+        IMAGE_RESOLUTION: Literal["0.5K", "1K", "2K", "4K"] = Field(
             default="1K",
-            description="""Resolution for image generation (Gemini 3 Pro Image only).
+            description="""Resolution for image generation (Gemini 3 only).
             Default value is 1K.""",
         )
         IMAGE_ASPECT_RATIO: Literal[
@@ -1940,9 +1940,9 @@ class Pipe:
             description="""Override admin setting (leave empty to use default).
             Options: disable | hidden_compact | hidden_detailed | visible | visible_timed""",
         )
-        IMAGE_RESOLUTION: Literal["1K", "2K", "4K"] | None | Literal[""] = Field(
+        IMAGE_RESOLUTION: Literal["0.5", "1K", "2K", "4K"] | None | Literal[""] = Field(
             default=None,
-            description="""Resolution for image generation (Gemini 3 Pro Image only).
+            description="""Resolution for image generation (Gemini 3 only).
             Default value is None (use the admin's setting). Possible values: 1K, 2K, 4K""",
         )
         IMAGE_ASPECT_RATIO: (
@@ -2175,13 +2175,12 @@ class Pipe:
         if (
             is_streaming
             and valves.IMAGE_RESOLUTION in ["2K", "4K"]
-            and "gemini-3-pro-image" in model_id
+            and "gemini-3" in model_id and "image" in model_id
         ):
             log.info(
                 f"Forcing non-streaming mode due to {valves.IMAGE_RESOLUTION} resolution setting."
             )
             is_streaming = False
-        request_type_str = "streaming" if is_streaming else "non-streaming"
 
         # Emit a status update. EventEmitter handles formatting and timestamps.
         asyncio.create_task(event_emitter.emit_status("Sending request..."))
@@ -2753,15 +2752,20 @@ class Pipe:
         gen_content_conf.response_modalities = ["TEXT"]
         if self._is_image_model(model_id, config):
             gen_content_conf.response_modalities.append("IMAGE")
-            if "gemini-3-pro-image" in model_id and valves.IMAGE_RESOLUTION:
+            if "gemini-3" in model_id and "image" in model_id and valves.IMAGE_RESOLUTION:
+                resolution = valves.IMAGE_RESOLUTION
+                if "3.1" not in model_id and resolution == "0.5K":
+                    # 512 is only supported on 3.1
+                    resolution = "1K"
+
                 log.debug(f"Setting image resolution to {valves.IMAGE_RESOLUTION}")
                 if not gen_content_conf.image_config:
                     gen_content_conf.image_config = types.ImageConfig()
                 gen_content_conf.image_config.image_size = valves.IMAGE_RESOLUTION
 
             if (
-                "gemini-3-pro-image" in model_id or "gemini-2.5-flash-image" in model_id
-            ) and valves.IMAGE_ASPECT_RATIO:
+                "gemini-3" in model_id or "gemini-2.5" in model_id
+            ) and "image" in model_id and valves.IMAGE_ASPECT_RATIO:
                 log.debug(f"Setting image aspect ratio to {valves.IMAGE_ASPECT_RATIO}")
                 if not gen_content_conf.image_config:
                     gen_content_conf.image_config = types.ImageConfig()
