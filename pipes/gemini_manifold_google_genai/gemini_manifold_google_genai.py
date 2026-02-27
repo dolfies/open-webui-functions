@@ -2626,7 +2626,7 @@ class Pipe:
                 config[model_id].get("capabilities", {}).get("image_generation", False)
             )
 
-        return False
+        return "image" in model_id.lower()
 
     # endregion 2.2 Model retrival from Google API
 
