@@ -7,7 +7,7 @@ author_url: https://github.com/suurt8ll
 funding_url: https://github.com/suurt8ll/open_webui_functions
 license: MIT
 version: 2.0.0
-commit: 33eddbc78ed827ed0053ca52315ca13e1c25bf5f
+commit: 4f23a7a10543ebdfaa29966ed3f7e96c16851340
 """
 
 VERSION = "2.0.0"
@@ -60,7 +60,7 @@ class Filter:
         SET_TEMP_TO_ZERO: bool = Field(
             default=False,
             description="""Decide if you want to set the temperature to 0 for grounded answers,
-            Google reccomends it in their docs.""",
+            Google recommends it in their docs.""",
         )
         GROUNDING_DYNAMIC_RETRIEVAL_THRESHOLD: float | None = Field(
             default=None,
@@ -128,11 +128,6 @@ class Filter:
         )
 
         canonical_model_name, is_manifold = self._get_model_name(body)
-
-        # Store the canonical model ID in metadata so the pipe doesn't need to re-parse it.
-        # This centralizes parsing logic and avoids repetition/inconsistency.
-        if is_manifold:
-            __metadata__["canonical_model_id"] = canonical_model_name
 
         # Exit early if we are filtering an unsupported model.
         if not is_manifold:
@@ -264,14 +259,14 @@ class Filter:
         # process the AsyncGenerator it returns. We save the user's original
         # streaming intent and then force the backend into streaming mode.
 
-        user_stream_intent = body.get("stream", True)
+        # user_stream_intent = body.get("stream", True)
 
-        log.info(
-            f"Storing user's stream intent ({user_stream_intent}) into __metadata__. "
-            "Backend will be forced down the streaming path."
-        )
-        metadata_features["stream"] = user_stream_intent
-        body["stream"] = True
+        # log.info(
+        #     f"Storing user's stream intent ({user_stream_intent}) into __metadata__. "
+        #     "Backend will be forced down the streaming path."
+        # )
+        # metadata_features["stream"] = user_stream_intent
+        # body["stream"] = True
 
         # TODO: Filter out the citation markers here.
 
@@ -725,7 +720,7 @@ class Filter:
 
         status_event_data: StatusEventData = {
             "action": "web_search",
-            "description": "This response was grounded with Google",
+            "description": "Searched the web",
             "urls": google_search_urls,
         }
         status_event: StatusEvent = {
@@ -924,7 +919,8 @@ class Filter:
             log.warning("Multiple candidates found, defaulting to first candidate.")
         return candidates[0]
 
-    def _get_model_name(self, body: "Body") -> tuple[str, bool]:
+    @staticmethod
+    def _get_model_name(body: "Body") -> tuple[str, bool]:
         """
         Extracts the effective and canonical model name from the request body.
 

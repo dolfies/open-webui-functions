@@ -7,8 +7,8 @@ author_url: https://github.com/suurt8ll
 funding_url: https://github.com/suurt8ll/open_webui_functions
 license: MIT
 version: 2.0.0
-requirements: google-genai==1.52.0
-commit: cc1013aa477a17a1179fa2b39e0f344f1cc4e587
+requirements: google-genai==1.65.0
+commit: 4f23a7a10543ebdfaa29966ed3f7e96c16851340
 """
 
 # I change these only when I make a release to avoid PR merge conflicts.
@@ -1070,6 +1070,28 @@ class GeminiContentBuilder:
 
         return rehydrated_parts
 
+    def _pop_thoughts(self, content: str) -> tuple[str, list[str]]:
+        """
+        Identifies and removes thought blocks from the content.
+
+        A thought is defined as text between <think> and </think>\n.
+        This method handles multiple thought blocks if they are peppered
+        throughout the message.
+
+        :param content: The raw message content from the assistant.
+        :return: A tuple containing (cleaned_content, list_of_extracted_thoughts).
+        """
+        # The pattern looks for the <​think> tag, captures everything inside (non-greedy),
+        # and matches the <​/think> tag plus a potential trailing newline.
+        # re.DOTALL allows the '.' character to match newlines within the capture group.
+        thought_pattern = re.compile(r"<think>(.*?)</think>\n?", re.DOTALL)
+
+        thoughts = thought_pattern.findall(content)
+        # Replace all occurrences with an empty string to get the "clean" content.
+        cleaned_content = thought_pattern.sub("", content)
+
+        return cleaned_content, thoughts
+
     async def _process_assistant_message(
         self,
         i: int,
@@ -1087,13 +1109,18 @@ class GeminiContentBuilder:
         original_content = message_db.get("original_content") if message_db else None
         current_content = message_body.get("content", "")
 
-        # Citations need to be stripped from the current content before comparison.
+        # 1. Pop thoughts out before any comparison or citation stripping.
+        # We store 'thoughts' for future use (e.g., adding to a metadata field).
+        current_content, thoughts = self._pop_thoughts(current_content)
+
+        # 2. Strip citations as before.
         if sources:
             current_content = self._remove_citation_markers(current_content, sources)
 
         # --- PATH 1: Restore from stored parts (ideal case) ---
         if gemini_parts and original_content is not None:
-            # Compare stripped versions to be robust against whitespace changes from the UI/backend.
+            # Now current_content has no thoughts and no citations, 
+            # making it directly comparable to original_content.
             if current_content.strip() == original_content.strip():
                 log.debug(
                     f"Reconstructing assistant message at index {i} from stored parts."
@@ -2041,7 +2068,7 @@ class Pipe:
         __event_emitter__: Callable[["Event"], Awaitable[None]] | None,
         __metadata__: "Metadata",
         __tools__: "Tools",
-    ) -> AsyncGenerator[dict | str, None] | str:
+    ) -> AsyncGenerator[dict | str, None] | dict:
 
         self._add_log_handler(self.valves.LOG_LEVEL)
 
@@ -2083,15 +2110,8 @@ class Pipe:
         merged_custom_params.update(chat_control_params)
         __metadata__["merged_custom_params"] = merged_custom_params
 
-        # Retrieve the canonical model ID parsed by the companion filter.
-        model_id = __metadata__.get("canonical_model_id")
-        if not model_id:
-            error_msg = (
-                "FATAL: 'canonical_model_id' not found in metadata. "
-                "The Gemini Manifold Companion filter is required and must be active to parse the model ID."
-            )
-            log.error(error_msg)
-            raise ValueError(error_msg)
+        model_id = self._get_model_name(body)
+        __metadata__["canonical_model_id"] = model_id
 
         # Initialize EventEmitter
         if __metadata__.get("task"):
@@ -2192,7 +2212,6 @@ class Pipe:
                     __tools__=__tools__,
                     event_emitter=event_emitter,
                     model_config=model_config,
-                    features=features,
                 )
 
             except Exception as e:
@@ -2624,6 +2643,46 @@ class Pipe:
         return model_name.split("/")[-1]
 
     @staticmethod
+    def _get_model_name(body: "Body") -> str:
+        """
+        Extracts the canonical model name from the request body.
+
+        Handles standard model names and custom workspace models by prioritizing
+        the base_model_id found in metadata.
+
+        Args:
+            body: The request body dictionary.
+
+        Returns:
+            The canonical model name (prefix removed).
+        """
+        # 1. Get the initially requested model name from the top level
+        effective_model_name: str = body.get("model", "")
+        initial_model_name = effective_model_name
+        base_model_name = None
+
+        # 2. Check for a base model ID in the metadata for custom models
+        if metadata := body.get("metadata"):
+            # Safely navigate the nested structure: metadata -> model -> info -> base_model_id
+            base_model_name = metadata.get("model", {}).get("info", {}).get("base_model_id", None)
+            # If a base model ID is found, it overrides the initially requested name
+            if base_model_name:
+                effective_model_name = base_model_name
+
+        # 3. Create the canonical model name by removing the manifold prefix
+        canonical_model_name = effective_model_name.replace("gemini_manifold_google_genai.", "")
+
+        # 4. Log the relevant names for debugging purposes
+        log.debug(
+            f"Model Name Extraction: initial='{initial_model_name}', "
+            f"base='{base_model_name}', effective='{effective_model_name}', "
+            f"canonical='{canonical_model_name}'"
+        )
+
+        # 5. Return only the canonical name
+        return canonical_model_name
+
+    @staticmethod
     def _is_image_model(model_id: str, config: dict) -> bool:
         """Check if the model is an image generation model using provided config."""
         if model_id in config:
@@ -2896,6 +2955,51 @@ class Pipe:
 
     # region 2.4 Model response processing
 
+    async def _aggregate_to_dict(
+        self,
+        generator: AsyncGenerator[dict | str, None],
+    ) -> dict:
+        """
+        Consumes the unified response generator and aggregates the chunks into a
+        single OpenAI Chat Completion dictionary. This keeps our processing pipeline
+        unified while properly satisfying OWUI's non-streaming request expectations.
+        """
+        content = ""
+        reasoning_content = ""
+        usage = None
+
+        async for chunk in generator:
+            if isinstance(chunk, str):
+                # Skip string yields (like "data: [DONE]") used for streaming protocol
+                continue
+
+            if "choices" in chunk and chunk["choices"]:
+                delta = chunk["choices"][0].get("delta", {})
+                if "content" in delta and delta["content"]:
+                    content += delta["content"]
+                if "reasoning_content" in delta and delta["reasoning_content"]:
+                    reasoning_content += delta["reasoning_content"]
+
+            if "usage" in chunk:
+                usage = chunk["usage"]
+
+        # Only add the reasoning key if there was actually reasoning content
+        message: dict[str, str] = {
+            "role": "assistant",
+            "content": content,
+        }
+        if reasoning_content:
+            message["reasoning_content"] = reasoning_content
+
+        return {
+            "choices": [
+                {
+                    "message": message,
+                }
+            ],
+            "usage": usage or {},
+        }
+
     async def _execute_generation_attempt(
         self,
         tier: str,
@@ -2907,8 +3011,7 @@ class Pipe:
         __tools__: "Tools",
         event_emitter: EventEmitter,
         model_config: dict,
-        features: "Features",
-    ) -> AsyncGenerator[dict | str, None] | str:
+    ) -> AsyncGenerator[dict | str, None] | dict:
         """
         Executes a single generation attempt with a specific tier configuration.
         Constructs a fresh client and file manager to ensure assets are
@@ -2967,9 +3070,18 @@ class Pipe:
         )
 
         # 5. Stream Setup
-        is_streaming = features.get("stream", True)
+        # 'is_streaming_request' tracks what Open WebUI expects to receive.
+        # 'use_streaming_api' tracks how we actually call the Google SDK.
+        is_streaming_request = body.get("stream", True)
+        use_streaming_api = is_streaming_request
+
+        # If a high-resolution image is requested with the gemini-3-pro-image model,
+        # the Google GenAI SDK's streaming method often raises a "chunk too big" error
+        # during the transfer of the generated image bytes. We avoid this by forcing
+        # a non-streaming SDK call, while still yielding the result as a stream to OWUI.
+
         if (
-            is_streaming
+            use_streaming_api
             and valves.IMAGE_RESOLUTION in ["2K", "4K"]
             and "gemini-3" in model_id
             and "image" in model_id
@@ -2977,7 +3089,7 @@ class Pipe:
             log.info(
                 f"Forcing non-streaming mode due to {valves.IMAGE_RESOLUTION} resolution."
             )
-            is_streaming = False
+            use_streaming_api = False
 
         asyncio.create_task(
             event_emitter.emit_status(
@@ -2986,9 +3098,7 @@ class Pipe:
         )
 
         # 6. Execution & Peek Logic
-        # We manually fetch the first chunk to catch early errors (429/403/503)
-        # before returning the stream to the frontend.
-        if is_streaming:
+        if use_streaming_api:
             stream = await client.aio.models.generate_content_stream(**gen_content_args)  # type: ignore
         else:
             response = await client.aio.models.generate_content(**gen_content_args)
@@ -3003,7 +3113,6 @@ class Pipe:
         try:
             first_chunk = await iterator.__anext__()
         except StopAsyncIteration:
-            # Empty response stream is a valid but weird state; treat as error to allow upper logic to decide
             raise ValueError("API returned an empty response stream.")
 
         # Success: Reconstruct the stream including the peeked chunk
@@ -3014,12 +3123,19 @@ class Pipe:
 
         log.info(f"Request successful ({tier}). Passing stream to unified processor.")
 
-        return self._unified_response_processor(
+        processor = self._unified_response_processor(
             reconstructed_stream(),
             __request__.app,
             event_emitter,
             __metadata__,
         )
+
+        # If OWUI requested a stream, we return the AsyncGenerator.
+        # If OWUI requested a single object, we aggregate the chunks back into a dict.
+        if is_streaming_request:
+            return processor
+        else:
+            return await self._aggregate_to_dict(processor)
 
     def _check_free_tier_eligibility(
         self,
@@ -3212,7 +3328,22 @@ class Pipe:
                 )
                 event_emitter.emit_toast(toast_msg, "info")
 
+            # Calculate usage data using the last received chunk.
+            # If the chunk contains usage metadata, we yield it so the backend persists it to DB.
+            if final_response_chunk and (
+                usage_data := self._get_usage_data(
+                    final_response_chunk,
+                    app.state,
+                    __metadata__,
+                    event_emitter.start_time,
+                )
+            ):
+                # Yielding this dictionary allows the OWUI proxy to catch and save usage.
+                yield {"usage": usage_data}
+
             if not error_occurred:
+                # 'data: [DONE]' should be the last thing yielded in a successful stream
+                # to signify the protocol-level end of the OpenAI-compatible stream.
                 yield "data: [DONE]"
                 log.info("Response processing finished successfully!")
 
@@ -3267,10 +3398,10 @@ class Pipe:
         """
         Processes a single `types.Part` object and returns a payload dictionary
         for the Open WebUI stream, along with a count of tag substitutions.
-        The payload key is 'reasoning' for thought parts and 'content' for others.
+        The payload key is 'reasoning_content' for thought parts and 'content' for others.
         """
         # Determine the payload key based on whether the part is a thought.
-        key = "reasoning" if part.thought else "content"
+        key = "reasoning_content" if part.thought else "content"
         payload_content: str | None = None
         count: int = 0
 
@@ -3534,15 +3665,6 @@ class Pipe:
 
         # TODO: Emit a toast message if url context retrieval was not successful.
 
-        # --- Emit usage and grounding data ---
-        # Attempt to emit token usage data even if the finish reason was problematic,
-        # as usage data might still be available.
-        if usage_data := self._get_usage_data(model_response, app_state, __metadata__):
-            # Inject the total processing time into the usage payload.
-            elapsed_time = time.monotonic() - event_emitter.start_time
-            usage_data["completion_time"] = round(elapsed_time, 2)
-            await event_emitter.emit_usage(usage_data)
-
         # --- Store grounding and timing data in state for the Filter ---
         if candidate and (grounding_metadata_obj := candidate.grounding_metadata):
             self._store_data_in_state(
@@ -3615,6 +3737,7 @@ class Pipe:
         response: types.GenerateContentResponse,
         app_state: State,
         metadata: "Metadata",
+        start_time: float,
     ) -> dict[str, Any] | None:
         """
         Extracts usage data from a GenerateContentResponse object.
@@ -3735,7 +3858,15 @@ class Pipe:
                     f"Failed to calculate cost: {e}. Cost details will be empty."
                 )
 
+        # OWUI expects 'input_tokens' and 'output_tokens' at the top level of the usage dict
+        # to populate the admin dashboard.
+        # We aggregate Gemini's specific counts into these two categories.
+        input_tokens = token_details.get("prompt_token_count", 0) + token_details.get("tool_use_prompt_token_count", 0)
+        output_tokens = token_details.get("candidates_token_count", 0) + token_details.get("thoughts_token_count", 0)
+
         usage_payload = {
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
             "token_details": token_details,
             "cost_details": cost_details,
         }
@@ -3751,6 +3882,10 @@ class Pipe:
 
             usage_payload["cumulative_token_count"] = prev_tokens + current_tokens
             usage_payload["cumulative_total_cost"] = round(prev_cost + current_cost, 6)
+
+        # Include completion time
+        elapsed_time = time.monotonic() - start_time
+        usage_payload["completion_time"] = round(elapsed_time, 2)
 
         return usage_payload
 
