@@ -76,6 +76,16 @@ class ModelFamily:
                 "verbosity",
             }
         },
+        "gpt-5": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "image_gen_tool",
+                "verbosity",
+            }
+        },
         "gpt-5.1": {
             "features": {
                 "function_calling",
@@ -96,7 +106,7 @@ class ModelFamily:
                 "verbosity",
             }
         },
-        "gpt-5": {
+        "gpt-5.4": {
             "features": {
                 "function_calling",
                 "reasoning",
@@ -117,6 +127,16 @@ class ModelFamily:
             }
         },
         "gpt-5.2-pro": {
+            "features": {
+                "function_calling",
+                "reasoning",
+                "reasoning_summary",
+                "web_search_tool",
+                "image_gen_tool",
+                "verbosity",
+            }
+        },
+        "gpt-5.4-pro": {
             "features": {
                 "function_calling",
                 "reasoning",
@@ -215,22 +235,12 @@ class ModelFamily:
                 "web_search_inbuilt",
             }
         },
-        "gpt-4.1": {
-            "features": {"function_calling", "web_search_tool", "image_gen_tool"}
-        },
-        "gpt-4.1-mini": {
-            "features": {"function_calling", "web_search_tool", "image_gen_tool"}
-        },
+        "gpt-4.1": {"features": {"function_calling", "web_search_tool", "image_gen_tool"}},
+        "gpt-4.1-mini": {"features": {"function_calling", "web_search_tool", "image_gen_tool"}},
         "gpt-4.1-nano": {"features": {"function_calling", "image_gen_tool"}},
-        "gpt-4o": {
-            "features": {"function_calling", "web_search_tool", "image_gen_tool"}
-        },
-        "gpt-4o-mini": {
-            "features": {"function_calling", "web_search_tool", "image_gen_tool"}
-        },
-        "gpt-4o-search-preview": {
-            "features": {"function_calling", "web_search_inbuilt"}
-        },
+        "gpt-4o": {"features": {"function_calling", "web_search_tool", "image_gen_tool"}},
+        "gpt-4o-mini": {"features": {"function_calling", "web_search_tool", "image_gen_tool"}},
+        "gpt-4o-search-preview": {"features": {"function_calling", "web_search_inbuilt"}},
         "o1": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
         "o3": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
         "o3-mini": {"features": {"function_calling", "reasoning", "reasoning_summary"}},
@@ -261,6 +271,7 @@ class ModelFamily:
         },
         "gpt-5.1-chat-latest": {"features": {"function_calling", "web_search_tool"}},
         "gpt-5.2-chat-latest": {"features": {"function_calling", "web_search_tool"}},
+        "gpt-5.3-chat-latest": {"features": {"function_calling", "web_search_tool"}},
         "gpt-5-chat-latest": {"features": {"function_calling", "web_search_tool"}},
         "chatgpt-4o-latest": {"features": {"function_calling", "web_search_tool"}},
     }
@@ -268,7 +279,14 @@ class ModelFamily:
     # Aliases/pseudos: keep base + implied params together.
     # Note: params follow the CompletionsBody model and are later transformed to ResponsesBody format
     _ALIASES: Dict[str, Dict[str, Any]] = {
-        "gpt-5.2-thinking": {"base_model": "gpt-5.2"},
+        "gpt-5.4-thinking-minimal": {
+            "base_model": "gpt-5.4",
+            "params": {"reasoning": {"effort": "minimal"}},
+        },
+        "gpt-5.4-thinking-high": {
+            "base_model": "gpt-5.4",
+            "params": {"reasoning": {"effort": "high"}},
+        },
         "gpt-5.2-thinking-minimal": {
             "base_model": "gpt-5.2",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -277,7 +295,6 @@ class ModelFamily:
             "base_model": "gpt-5.2",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.1-thinking": {"base_model": "gpt-5.1"},
         "gpt-5.1-thinking-minimal": {
             "base_model": "gpt-5.1",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -286,7 +303,6 @@ class ModelFamily:
             "base_model": "gpt-5.1",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5-thinking": {"base_model": "gpt-5"},
         "gpt-5-thinking-minimal": {
             "base_model": "gpt-5",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -295,7 +311,6 @@ class ModelFamily:
             "base_model": "gpt-5",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5-thinking-mini": {"base_model": "gpt-5-mini"},
         "gpt-5-thinking-mini-minimal": {
             "base_model": "gpt-5-mini",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -304,7 +319,6 @@ class ModelFamily:
             "base_model": "gpt-5-mini",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5-thinking-nano": {"base_model": "gpt-5-nano"},
         "gpt-5-thinking-nano-minimal": {
             "base_model": "gpt-5-nano",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -313,7 +327,6 @@ class ModelFamily:
             "base_model": "gpt-5-nano",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5-codex-thinking": {"base_model": "gpt-5-codex"},
         "gpt-5-codex-thinking-minimal": {
             "base_model": "gpt-5-codex",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -322,16 +335,14 @@ class ModelFamily:
             "base_model": "gpt-5-codex",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5-codex-thinking-mini": {"base_model": "gpt-5-codex-mini"},
-        "gpt-5-codex-thinking-mini-minimal": {
+        "gpt-5-codex-mini-thinking-minimal": {
             "base_model": "gpt-5-codex-mini",
             "params": {"reasoning": {"effort": "minimal"}},
         },
-        "gpt-5-codex-thinking-mini-high": {
+        "gpt-5-codex-mini-thinking-high": {
             "base_model": "gpt-5-codex-mini",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.1-codex-thinking": {"base_model": "gpt-5.1-codex"},
         "gpt-5.1-codex-thinking-minimal": {
             "base_model": "gpt-5.1-codex",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -340,25 +351,22 @@ class ModelFamily:
             "base_model": "gpt-5.1-codex",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.1-codex-thinking-mini": {"base_model": "gpt-5.1-codex-mini"},
-        "gpt-5.1-codex-thinking-mini-minimal": {
+        "gpt-5.1-codex-mini-thinking-minimal": {
             "base_model": "gpt-5.1-codex-mini",
             "params": {"reasoning": {"effort": "minimal"}},
         },
-        "gpt-5.1-codex-thinking-mini-high": {
+        "gpt-5.1-codex-mini-thinking-high": {
             "base_model": "gpt-5.1-codex-mini",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.1-codex-thinking-max": {"base_model": "gpt-5.1-codex-max"},
-        "gpt-5.1-codex-thinking-max-minimal": {
+        "gpt-5.1-codex-max-thinking-minimal": {
             "base_model": "gpt-5.1-codex-max",
             "params": {"reasoning": {"effort": "minimal"}},
         },
-        "gpt-5.1-codex-thinking-max-high": {
+        "gpt-5.1-codex-max-thinking-high": {
             "base_model": "gpt-5.1-codex-max",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.2-codex-thinking": {"base_model": "gpt-5.2-codex"},
         "gpt-5.2-codex-thinking-minimal": {
             "base_model": "gpt-5.2-codex",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -367,7 +375,6 @@ class ModelFamily:
             "base_model": "gpt-5.2-codex",
             "params": {"reasoning": {"effort": "high"}},
         },
-        "gpt-5.3-codex-thinking": {"base_model": "gpt-5.3-codex"},
         "gpt-5.3-codex-thinking-minimal": {
             "base_model": "gpt-5.3-codex",
             "params": {"reasoning": {"effort": "minimal"}},
@@ -481,6 +488,7 @@ class ResponsesBody(BaseModel):
     tool_choice: Optional[Dict[str, Any]] = None
     tools: Optional[List[Dict[str, Any]]] = None
     include: Optional[List[str]] = None  # extra output keys
+    service_tier: Optional[Literal["auto", "default", "flex", "scale", "priority"]] = None
 
     class Config:
         extra = "allow"  # Allow additional OpenAI parameters automatically (future-proofing)
@@ -875,7 +883,7 @@ class Pipe:
 
         # Models
         MODEL_ID: str = Field(
-            default="gpt-5.2-chat-latest, gpt-5.2-thinking, gpt-5.2-thinking-high, gpt-5.2-thinking-minimal, gpt-5.3-codex, gpt-5.1-codex-max",
+            default="gpt-5.3-chat-latest, gpt-5.4, gpt-5.4-thinking-high, gpt-5.4-thinking-minimal, gpt-5.3-codex, gpt-5.1-codex-max, o4",
             description=(
                 "Comma separated OpenAI model IDs. Each ID becomes a model entry in WebUI. "
                 "Supports all official OpenAI model IDs and pseudo IDs (see README.md for full list)."
@@ -961,6 +969,14 @@ class Pipe:
         TRUNCATION: Literal["auto", "disabled"] = Field(
             default="auto",
             description="OpenAI truncation strategy for model responses. 'auto' drops middle context items if the conversation exceeds the context window; 'disabled' returns a 400 error instead.",
+        )
+        SERVICE_TIER: Literal["auto", "default", "flex", "scale", "priority"] = Field(
+            default="auto",
+            description=(
+                "Service tier to use for the request. 'auto' lets OpenAI determine the best tier based on the model and other factors. "
+                "'default' is the standard tier; 'flex', 'scale', and 'priority' offer progressively higher performance and cost. "
+                "Note: Not all tiers may be available to all users or models. Check OpenAI documentation for eligibility and pricing details."
+            ),
         )
 
         # Privacy & caching
@@ -1174,6 +1190,7 @@ class Pipe:
                 if valves.MAX_TOOL_CALLS is not None
                 else {}
             ),
+            service_tier=valves.SERVICE_TIER,
         )
 
         # STEP 2: Detect if task model (generate title, generate tags, etc.), handle it separately

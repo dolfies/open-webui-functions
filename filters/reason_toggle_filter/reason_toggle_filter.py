@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from open_webui.utils.manifold_types import *
 
 REASONING_MODELS = {"gpt-5", "o1", "o3", "o4"}
-REASONING_MODELS_BLACKLIST = {"gpt-5-chat", "gpt-5.1-chat", "gpt-5.2-chat"}
+REASONING_MODELS_BLACKLIST = {"gpt-5-chat", "gpt-5.1-chat", "gpt-5.2-chat", "gpt-5.3-chat"}
 
 
 class Filter:
